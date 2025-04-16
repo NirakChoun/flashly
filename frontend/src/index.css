@@ -1,6 +1,65 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Fonts */
+
+/* inter-regular - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/fonts/inter-v18-latin-regular.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* space-grotesk-regular - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/fonts/space-grotesk-v21-latin-regular.woff2")
+    format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* Custom CSS */
+@theme {
+  --font-space-grotesk: "Space Grotesk", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+  --color-matte-black: #1b263b;
+  --color-white-smoke: #f5f5f5;
+  --color-gold: #ffd51e;
+  --color-gray: #36454f;
+}
+
+body {
+  --font-inter: "Inter", sans-serif;
+  background-color: var(--color-matte-black);
+  color: var(--color-white-smoke);
+}
+
+.perspective {
+  perspective: 1200px;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.cursor-grab:active {
+  cursor: grabbing;
+}
+
+/* poppins-regular - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./assets/fonts/poppins-v22-latin-regular.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* Shadcn CSS */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
