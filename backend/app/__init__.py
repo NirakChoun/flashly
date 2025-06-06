@@ -19,7 +19,10 @@ def create_app():
     migrate.init_app(app, db)
     jwt.init_app(app)
 
-    # register routes later !!!
+    from .routes import register_routes
+    register_routes(app)
+    
+    return app
     
 
 
