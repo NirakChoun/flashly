@@ -14,7 +14,10 @@ class StudySet(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # Relationships
+    # User → StudySets (one-to-many)
     user = db.relationship('User', backref='studysets')
+
+    # Flashcard → StudySet (many-to-one) 
     flashcards = db.relationship('Flashcard', backref='studyset', cascade='all, delete-orphan')
 
     def __repr__(self):
