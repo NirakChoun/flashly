@@ -10,6 +10,8 @@ dependencies = [
     "flask-jwt-extended>=4.7.1",
     "flask-migrate>=4.1.0",
     "flask-sqlalchemy>=3.1.1",
+    "google-generativeai>=0.8.5",
     "psycopg2-binary>=2.9.10",
+    "pymupdf>=1.26.0",
     "python-dotenv>=1.1.0",
 ]

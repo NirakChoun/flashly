@@ -5,10 +5,10 @@ def get_all_studysets(user_id):
     studysets = StudySet.query.filter_by(user_id=user_id).all()
     return [s.to_dict() for s in studysets]
 
-def create_studyset(data):
+def create_studyset(user_id, data):
     try:
         studyset = StudySet(
-            user_id=data['user_id'],
+            user_id=user_id,
             title=data['title'],
             description=data.get('description', '')
         )

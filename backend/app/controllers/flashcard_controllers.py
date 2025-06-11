@@ -1,5 +1,6 @@
 from app.models.flashcard_model import Flashcard
 from app import db
+from utils.flashly_bot import FlashlyBot
 
 def get_flashcards_by_studyset(studyset_id):
     """Get all flashcards for a specific study set"""
@@ -22,6 +23,55 @@ def create_flashcards(studyset_id, user_id, flashcards_data):
         
         db.session.commit()
         return [f.to_dict() for f in flashcards]
+        
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+def preview_flashcards_from_file(studyset_id, user_id, file):
+    """Generate flashcards preview from file WITHOUT saving to database"""
+    try:
+        bot = FlashlyBot()
+        
+        # Extract text and generate flashcards data
+        text = bot.extract_text(file)
+        flashcards_data = bot.generate_flashcards(text)
+        
+        if not flashcards_data:
+            raise ValueError("Failed to generate flashcards from file")
+        
+        # Return preview data without saving to database
+        return {
+            'success': True,
+            'preview': True,
+            'flashcards_count': len(flashcards_data),
+            'flashcards': flashcards_data,  # Raw data, no UUIDs yet
+            'source_file': file.filename
+        }
+        
+    except Exception as e:
+        raise e
+    
+def save_preview_flashcards(studyset_id, user_id, flashcards_data):
+    """Save previewed flashcards to database after user approval"""
+    try:
+        flashcards = []
+        for card_data in flashcards_data:
+            flashcard = Flashcard(
+                user_id=user_id,
+                studyset_id=studyset_id,
+                question=card_data['question'],
+                answer=card_data['answer']
+            )
+            flashcards.append(flashcard)
+            db.session.add(flashcard)
+        
+        db.session.commit()
+        return {
+            'success': True,
+            'saved': True,
+            'flashcards': [f.to_dict() for f in flashcards]
+        }
         
     except Exception as e:
         db.session.rollback()
