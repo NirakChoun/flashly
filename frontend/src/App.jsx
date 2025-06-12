@@ -24,6 +24,9 @@ const App = () => {
           <Route path="auth/login" element={<LoginPage />} />
           <Route path="auth/register" element={<RegisterPage />} />
         </Route>
+
+        {/* The layout depends on whether the user's login status */}
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     )
   );
