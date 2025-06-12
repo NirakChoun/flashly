@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const CTA = () => {
   return (
@@ -15,12 +16,12 @@ const CTA = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <div className="relative inline-flex items-center justify-center group">
             <div className="absolute transition-all duration-200 rounded-full -inset-px bg-gradient-to-r from-cyan-500 to-purple-500 group-hover:shadow-lg group-hover:shadow-cyan-500/50"></div>
-            <a
-              href="/signup"
+            <Link
+              to="/auth/register"
               className="relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white bg-gray-900 border border-transparent rounded-full"
             >
               Start Free Today
-            </a>
+            </Link>
           </div>
 
           <p className="text-gray-400 text-sm">

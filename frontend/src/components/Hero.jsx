@@ -1,6 +1,7 @@
 import React from "react";
 import { BackgroundLines } from "./ui/background-lines";
 import Navbar from "./Navbar";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -25,14 +26,14 @@ const Hero = () => {
               </p>
               <div className="relative inline-flex items-center justify-center mt-12 sm:mt-16 group">
                 <div className="absolute transition-all duration-200 rounded-full -inset-px bg-gradient-to-r from-cyan-500 to-purple-500 group-hover:shadow-lg group-hover:shadow-cyan-500/50"></div>
-                <a
-                  href="/signup"
+                <Link
+                  to="/auth/register"
                   title=""
                   className="relative inline-flex items-center justify-center px-12 py-4 text-lg font-bold text-white bg-gray-900 border border-transparent rounded-full"
                   role="button"
                 >
                   Start Creating Flashcards
-                </a>
+                </Link>
               </div>
 
               <p className="mt-8 text-base font-normal text-gray-400">
