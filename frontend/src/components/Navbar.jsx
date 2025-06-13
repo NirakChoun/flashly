@@ -1,21 +1,60 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "../assets/img/logo.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { LogOut, ChevronDown } from "lucide-react";
+import { toast } from "react-toastify";
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn = false, user = null }) => {
   const [expanded, setExpanded] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setExpanded(!expanded);
   };
 
-  // Animation variants for mobile menu
+  const logoutUser = async () => {
+    try {
+      setIsLoggingOut(true);
+
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+
+      toast.success("Logged out successfully");
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to logout. Please try again.");
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
+  const onLogoutClick = async (e) => {
+    e.preventDefault();
+    await logoutUser();
+  };
+
+  // Animation variants
   const menuVariants = {
-    hidden: {
-      opacity: 0,
-      y: -20,
-    },
+    hidden: { opacity: 0, y: -20 },
     visible: {
       opacity: 1,
       y: 0,
@@ -29,26 +68,16 @@ const Navbar = () => {
     exit: {
       opacity: 0,
       y: -20,
-      transition: {
-        duration: 0.2,
-        ease: "easeIn",
-      },
+      transition: { duration: 0.2, ease: "easeIn" },
     },
   };
 
-  // Animation variants for menu items
   const itemVariants = {
-    hidden: {
-      opacity: 0,
-      y: 10,
-    },
+    hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.3, ease: "easeOut" },
     },
   };
 
@@ -56,13 +85,15 @@ const Navbar = () => {
     <header className="relative z-50 py-4 sm:py-6 bg-gray-900">
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
+          {/* Logo */}
           <div className="shrink-0">
-            <Link to="/" title="" className="flex items-center space-x-3">
+            <Link to="/" className="flex items-center space-x-3">
               <img className="w-auto h-9" src={logo} alt="Flashly Logo" />
               <span className="text-2xl font-bold text-white">Flashly</span>
             </Link>
           </div>
 
+          {/* Mobile menu button */}
           <div className="flex md:hidden">
             <motion.button
               type="button"
@@ -75,7 +106,6 @@ const Navbar = () => {
               {!expanded ? (
                 <svg
                   className="w-7 h-7"
-                  xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -90,7 +120,6 @@ const Navbar = () => {
               ) : (
                 <svg
                   className="w-7 h-7"
-                  xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -106,23 +135,104 @@ const Navbar = () => {
             </motion.button>
           </div>
 
-          <nav className="hidden md:flex md:items-center md:justify-end md:space-x-8">
-            <Link
-              to="/auth/login"
-              className="text-base font-normal text-gray-300 transition-all duration-200 hover:text-white"
-            >
-              Login
-            </Link>
-            <Link
-              to="/auth/register"
-              className="inline-flex items-center justify-center px-6 py-2.5 text-base font-medium text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full hover:from-cyan-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-900"
-            >
-              Sign Up
-            </Link>
-          </nav>
+          {/* Desktop Navigation */}
+          {isLoggedIn ? (
+            /* Logged in user navigation */
+            <nav className="hidden md:flex md:items-center md:justify-end md:space-x-8">
+              {/* Navigation Links */}
+              <Link
+                to="/home"
+                className="text-base font-normal text-gray-300 transition-all duration-200 hover:text-white"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/generate"
+                className="text-base font-normal text-gray-300 transition-all duration-200 hover:text-white"
+              >
+                Generate
+              </Link>
+
+              {/* User Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-2 hover:bg-gray-800"
+                  >
+                    <Avatar className="h-8 w-8 rounded-lg">
+                      <AvatarImage
+                        src={user?.avatar}
+                        alt={user?.username || "User"}
+                      />
+                      <AvatarFallback className="rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 text-white">
+                        {user?.username?.charAt(0)?.toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <ChevronDown className="h-4 w-4 text-gray-400" />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                  className="w-56 rounded-lg bg-gray-800 border-gray-700"
+                  align="end"
+                  sideOffset={4}
+                >
+                  <DropdownMenuLabel className="p-0 font-normal">
+                    <div className="flex items-center gap-2 px-2 py-1.5 text-left text-sm">
+                      <Avatar className="h-8 w-8 rounded-lg">
+                        <AvatarImage
+                          src={user?.avatar}
+                          alt={user?.username || "User"}
+                        />
+                        <AvatarFallback className="rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 text-white">
+                          {user?.username?.charAt(0)?.toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="grid flex-1 text-left text-sm leading-tight">
+                        <span className="truncate font-semibold text-white">
+                          {user?.username || "User"}
+                        </span>
+                        <span className="truncate text-xs text-gray-400">
+                          {user?.email || "No email"}
+                        </span>
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+
+                  <DropdownMenuSeparator className="bg-gray-700" />
+
+                  <DropdownMenuItem
+                    onClick={onLogoutClick}
+                    disabled={isLoggingOut}
+                    className="cursor-pointer text-gray-300 hover:text-white hover:bg-gray-700 focus:bg-gray-700"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {isLoggingOut ? "Logging out..." : "Log out"}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </nav>
+          ) : (
+            /* Guest user navigation */
+            <nav className="hidden md:flex md:items-center md:justify-end md:space-x-8">
+              <Link
+                to="/auth/login"
+                className="text-base font-normal text-gray-300 transition-all duration-200 hover:text-white"
+              >
+                Login
+              </Link>
+              <Link
+                to="/auth/register"
+                className="inline-flex items-center justify-center px-6 py-2.5 text-base font-medium text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full hover:from-cyan-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-900"
+              >
+                Sign Up
+              </Link>
+            </nav>
+          )}
         </div>
 
-        {/* Animated Mobile Navigation */}
+        {/* Mobile Navigation */}
         <AnimatePresence>
           {expanded && (
             <motion.nav
@@ -133,30 +243,105 @@ const Navbar = () => {
               exit="exit"
             >
               <div className="flex flex-col items-center space-y-6 py-6">
-                <motion.div
-                  variants={itemVariants}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Link
-                    to="/auth/login"
-                    className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-gray-300 transition-all duration-200 border-2 border-gray-600 rounded-full hover:text-white hover:border-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 focus:ring-offset-gray-900"
-                  >
-                    Login
-                  </Link>
-                </motion.div>
-                <motion.div
-                  variants={itemVariants}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Link
-                    to="/auth/signup"
-                    className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full hover:from-cyan-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-900"
-                  >
-                    Sign Up
-                  </Link>
-                </motion.div>
+                {isLoggedIn ? (
+                  /* Mobile logged in navigation */
+                  <>
+                    {/* User Info */}
+                    <motion.div
+                      variants={itemVariants}
+                      className="flex items-center gap-3 pb-4 border-b border-gray-700 w-full justify-center"
+                    >
+                      <Avatar className="h-10 w-10 rounded-lg">
+                        <AvatarImage
+                          src={user?.avatar}
+                          alt={user?.username || "User"}
+                        />
+                        <AvatarFallback className="rounded-lg bg-gradient-to-r from-cyan-500 to-purple-500 text-white">
+                          {user?.username?.charAt(0)?.toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-center">
+                        <div className="font-semibold text-white">
+                          {user?.username || "User"}
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          {user?.email || "No email"}
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    {/* Navigation Links */}
+                    <motion.div
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Link
+                        to="/home"
+                        className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-gray-300 transition-all duration-200 border-2 border-gray-600 rounded-full hover:text-white hover:border-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 focus:ring-offset-gray-900"
+                      >
+                        Dashboard
+                      </Link>
+                    </motion.div>
+
+                    <motion.div
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Link
+                        to="/generate"
+                        className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full hover:from-cyan-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-900"
+                      >
+                        Generate
+                      </Link>
+                    </motion.div>
+
+                    {/* Logout Button */}
+                    <motion.div
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <button
+                        onClick={onLogoutClick}
+                        disabled={isLoggingOut}
+                        className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-red-400 transition-all duration-200 border-2 border-red-600 rounded-full hover:text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        {isLoggingOut ? "Logging out..." : "Log out"}
+                      </button>
+                    </motion.div>
+                  </>
+                ) : (
+                  /* Mobile guest navigation */
+                  <>
+                    <motion.div
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Link
+                        to="/auth/login"
+                        className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-gray-300 transition-all duration-200 border-2 border-gray-600 rounded-full hover:text-white hover:border-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 focus:ring-offset-gray-900"
+                      >
+                        Login
+                      </Link>
+                    </motion.div>
+                    <motion.div
+                      variants={itemVariants}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Link
+                        to="/auth/register"
+                        className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full hover:from-cyan-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-900"
+                      >
+                        Sign Up
+                      </Link>
+                    </motion.div>
+                  </>
+                )}
               </div>
             </motion.nav>
           )}

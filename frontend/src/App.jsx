@@ -9,11 +9,19 @@ import {
 
 // Layouts
 import LandingLayout from "./layouts/LandingLayout";
+import HomeLayout from "./layouts/HomeLayout";
 
 // Pages
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+
+import DashboardPage from "./pages/DashboardPage";
+
+import NotFoundPage from "./pages/NotFoundPage";
+
+// Utils
+import ProtectedRoutes from "../utils/ProtectedRoutes";
 
 const App = () => {
   const router = createBrowserRouter(
@@ -25,7 +33,12 @@ const App = () => {
           <Route path="auth/register" element={<RegisterPage />} />
         </Route>
 
-        {/* The layout depends on whether the user's login status */}
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/home" element={<HomeLayout />}>
+            <Route index element={<DashboardPage />} />
+          </Route>
+        </Route>
+
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     )

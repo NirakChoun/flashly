@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 const LandingLayout = () => {
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
+      <Navbar isLoggedIn={false} />
       <Outlet />
       <Footer />
       <ToastContainer />

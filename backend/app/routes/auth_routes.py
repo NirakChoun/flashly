@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, unset_jwt_cookies
 from app.models import User
-from app.controllers.auth_controllers import login_user, register_user, get_me_user
+from app.controllers.auth_controllers import login_user, register_user, get_profile_user
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -29,8 +29,8 @@ def logout():
     unset_jwt_cookies(response)
     return response
 
-@auth_bp.route("/me", methods=["GET"])
+@auth_bp.route("/profile", methods=["GET"])
 @jwt_required()
-def me():
-    return get_me_user(get_jwt_identity())
+def profile():
+    return get_profile_user(get_jwt_identity())
 

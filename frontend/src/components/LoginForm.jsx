@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -10,9 +10,40 @@ import {
 } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-export function LoginForm({ className, ...props }) {
+export function LoginForm({ className, loginUserSubmit, ...props }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const submitForm = async (e) => {
+    e.preventDefault();
+
+    // Basic validation
+    if (!email || !password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await loginUserSubmit(email, password);
+      toast.success("Login successful!");
+      navigate("/home"); // Change to your desired redirect route
+      console.log("Success");
+    } catch (error) {
+      console.error("Login failed: ", error);
+      toast.error("Login failed. Please check your credentials.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="bg-gray-800 border-gray-700">
@@ -23,12 +54,13 @@ export function LoginForm({ className, ...props }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={submitForm}>
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <Button
+                  type="button"
                   variant="outline"
-                  className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white"
+                  className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -43,8 +75,9 @@ export function LoginForm({ className, ...props }) {
                   Login with GitHub
                 </Button>
                 <Button
+                  type="button"
                   variant="outline"
-                  className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white"
+                  className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -73,6 +106,8 @@ export function LoginForm({ className, ...props }) {
                     id="email"
                     type="email"
                     placeholder="m@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500"
                     required
                   />
@@ -82,25 +117,29 @@ export function LoginForm({ className, ...props }) {
                     <Label htmlFor="password" className="text-gray-300">
                       Password
                     </Label>
-                    <a
-                      href="#"
+                    <Link
+                      to="#"
                       className="ml-auto text-sm underline-offset-4 hover:underline text-gray-400 hover:text-white"
                     >
                       Forgot your password?
-                    </a>
+                    </Link>
                   </div>
                   <Input
                     id="password"
                     type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500"
                     required
                   />
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white cursor-pointer border-0 transition-colors h-10 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Login
+                  {isLoading ? "Logging in..." : "Login"}
                 </Button>
               </div>
               <div className="text-center text-sm">

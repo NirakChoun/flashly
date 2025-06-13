@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -10,9 +10,94 @@ import {
 } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-export function RegisterForm({ className, ...props }) {
+export function RegisterForm({ className, registerUserSubmit, ...props }) {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const validatePasswords = () => {
+    if (password !== confirmPassword) {
+      setPasswordError("Passwords don't match");
+      toast.error("Passwords don't match");
+      return false;
+    }
+    setPasswordError("");
+    return true;
+  };
+
+  const clearErrors = () => {
+    setUsernameError("");
+    setEmailError("");
+    setPasswordError("");
+  };
+
+  const submitForm = async (e) => {
+    e.preventDefault();
+
+    // Clear previous errors
+    clearErrors();
+
+    // Basic validation
+    if (!username || !email || !password || !confirmPassword) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    // Validate passwords match
+    if (!validatePasswords()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    const newUser = {
+      username,
+      email,
+      password,
+    };
+
+    try {
+      await registerUserSubmit(newUser);
+      toast.success("Account created successfully! Please log in.");
+      navigate("/auth/login");
+    } catch (error) {
+      console.error("Registration failed:", error);
+
+      // Handle specific error messages from backend
+      if (error.message) {
+        const errorMessage = error.message.toLowerCase();
+
+        if (errorMessage.includes("username")) {
+          setUsernameError("Username already taken");
+          toast.error(
+            "Username already taken. Please choose a different username."
+          );
+        } else if (errorMessage.includes("email")) {
+          setEmailError("Email already registered");
+          toast.error(
+            "Email already registered. Please use a different email or try logging in."
+          );
+        } else {
+          toast.error(error.message);
+        }
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="bg-gray-800 border-gray-700">
@@ -25,12 +110,14 @@ export function RegisterForm({ className, ...props }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={submitForm}>
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
                 <Button
+                  type="button"
                   variant="outline"
-                  className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white"
+                  className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
+                  onClick={() => toast.info("GitHub signup coming soon!")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -45,8 +132,10 @@ export function RegisterForm({ className, ...props }) {
                   Sign up with GitHub
                 </Button>
                 <Button
+                  type="button"
                   variant="outline"
-                  className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white"
+                  className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
+                  onClick={() => toast.info("Google signup coming soon!")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -68,16 +157,28 @@ export function RegisterForm({ className, ...props }) {
               </div>
               <div className="grid gap-6">
                 <div className="grid gap-3">
-                  <Label htmlFor="name" className="text-gray-300">
-                    Full Name
+                  <Label htmlFor="username" className="text-gray-300">
+                    Username
                   </Label>
                   <Input
-                    id="name"
+                    id="username"
                     type="text"
-                    placeholder="John Doe"
-                    className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500"
+                    placeholder="johndoe"
+                    value={username}
+                    onChange={(e) => {
+                      setUsername(e.target.value);
+                      // Clear username error when user starts typing
+                      if (usernameError) setUsernameError("");
+                    }}
+                    className={`bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500 ${
+                      usernameError ? "border-red-500 focus:border-red-500" : ""
+                    }`}
                     required
+                    disabled={isLoading}
                   />
+                  {usernameError && (
+                    <p className="text-red-400 text-sm mt-1">{usernameError}</p>
+                  )}
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="email" className="text-gray-300">
@@ -87,9 +188,21 @@ export function RegisterForm({ className, ...props }) {
                     id="email"
                     type="email"
                     placeholder="m@example.com"
-                    className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      // Clear email error when user starts typing
+                      if (emailError) setEmailError("");
+                    }}
+                    className={`bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500 ${
+                      emailError ? "border-red-500 focus:border-red-500" : ""
+                    }`}
                     required
+                    disabled={isLoading}
                   />
+                  {emailError && (
+                    <p className="text-red-400 text-sm mt-1">{emailError}</p>
+                  )}
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="password" className="text-gray-300">
@@ -99,8 +212,11 @@ export function RegisterForm({ className, ...props }) {
                     id="password"
                     type="password"
                     placeholder="Create a strong password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500"
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 <div className="grid gap-3">
@@ -111,15 +227,28 @@ export function RegisterForm({ className, ...props }) {
                     id="confirmPassword"
                     type="password"
                     placeholder="Confirm your password"
-                    className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500"
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      // Clear password error when user starts typing
+                      if (passwordError) setPasswordError("");
+                    }}
+                    className={`bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-cyan-500 focus:ring-cyan-500 ${
+                      passwordError ? "border-red-500 focus:border-red-500" : ""
+                    }`}
                     required
+                    disabled={isLoading}
                   />
+                  {passwordError && (
+                    <p className="text-red-400 text-sm mt-1">{passwordError}</p>
+                  )}
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white cursor-pointer border-0 transition-colors h-10 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Create Account
+                  {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
               </div>
               <div className="text-center text-sm">
