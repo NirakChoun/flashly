@@ -98,6 +98,14 @@ export function RegisterForm({ className, registerUserSubmit, ...props }) {
     }
   };
 
+  const handleGitHubLogin = () => {
+    window.location.href = "http://localhost:8000/oauth/authorize/github";
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:8000/oauth/authorize/google";
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="bg-gray-800 border-gray-700">
@@ -117,7 +125,7 @@ export function RegisterForm({ className, registerUserSubmit, ...props }) {
                   type="button"
                   variant="outline"
                   className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
-                  onClick={() => toast.info("GitHub signup coming soon!")}
+                  onClick={handleGitHubLogin}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -135,7 +143,7 @@ export function RegisterForm({ className, registerUserSubmit, ...props }) {
                   type="button"
                   variant="outline"
                   className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
-                  onClick={() => toast.info("Google signup coming soon!")}
+                  onClick={handleGoogleLogin}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

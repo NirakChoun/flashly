@@ -5,6 +5,9 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # Secret Key
+    SECRET_KEY = os.getenv("SECRET_KEY")
+
     # JWT Configurations
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
     JWT_COOKIE_SECURE = os.getenv("JWT_COOKIE_SECURE", "False").lower() == "true"
@@ -22,6 +25,37 @@ class Config:
     CORS_METHODS = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     CORS_HEADERS = ["Content-Type", "Authorization"]
     CORS_SUPPORTS_CREDENTIALS = True  # Required for cookies
+
+    # OAuth2 Providers Configuration
+    OAUTH2_PROVIDERS = {
+        'google': {
+            'client_id': os.environ.get('GOOGLE_CLIENT_ID'),
+            'client_secret': os.environ.get('GOOGLE_CLIENT_SECRET'),
+            'authorize_url': 'https://accounts.google.com/o/oauth2/auth',
+            'token_url': 'https://accounts.google.com/o/oauth2/token',
+            'userinfo': {
+                'url': 'https://www.googleapis.com/oauth2/v3/userinfo',
+                'email': lambda json: json['email'],
+                'name': lambda json: json.get('name', ''),
+                'picture': lambda json: json.get('picture', ''),
+            },
+            'scopes': ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'],
+        },
+        'github': {
+            'client_id': os.environ.get('GITHUB_CLIENT_ID'),
+            'client_secret': os.environ.get('GITHUB_CLIENT_SECRET'),
+            'authorize_url': 'https://github.com/login/oauth/authorize',
+            'token_url': 'https://github.com/login/oauth/access_token',
+            'userinfo': {
+                'url': 'https://api.github.com/user',
+                'email_url': 'https://api.github.com/user/emails',
+                'email': lambda json: json[0]['email'] if isinstance(json, list) else json.get('email'),
+                'name': lambda json: json.get('login', ''),
+                'picture': lambda json: json.get('avatar_url', ''),
+            },
+            'scopes': ['user:email'],
+        },
+    }
 
 class DevelopmentConfig(Config):
     DEBUG = True

@@ -44,6 +44,14 @@ export function LoginForm({ className, loginUserSubmit, ...props }) {
     }
   };
 
+  const handleGitHubLogin = () => {
+    window.location.href = "http://localhost:8000/oauth/authorize/github";
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:8000/oauth/authorize/google";
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="bg-gray-800 border-gray-700">
@@ -61,6 +69,7 @@ export function LoginForm({ className, loginUserSubmit, ...props }) {
                   type="button"
                   variant="outline"
                   className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
+                  onClick={handleGitHubLogin}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -78,6 +87,7 @@ export function LoginForm({ className, loginUserSubmit, ...props }) {
                   type="button"
                   variant="outline"
                   className="w-full border-gray-600 text-black hover:bg-gray-700 hover:text-white cursor-pointer transition-colors"
+                  onClick={handleGoogleLogin}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
