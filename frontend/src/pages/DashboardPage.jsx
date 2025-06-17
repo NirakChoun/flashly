@@ -146,7 +146,7 @@ const DashboardPage = () => {
             <h2 className="text-2xl font-semibold text-gray-100">StudySets</h2>
             <button
               onClick={handleCreateStudySet}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 rounded-lg transition-all duration-200 font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 rounded-lg transition-all duration-200 font-medium cursor-pointer"
             >
               <Plus size={20} />
               Create StudySet
@@ -183,7 +183,7 @@ const DashboardPage = () => {
                   <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <button
                       onClick={(e) => toggleDropdown(studySet.id, e)}
-                      className="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"
+                      className="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
                     >
                       <MoreVertical size={16} className="text-gray-400" />
                     </button>
@@ -193,14 +193,14 @@ const DashboardPage = () => {
                       <div className="absolute right-0 top-full mt-2 w-48 bg-gray-700 border border-gray-600 rounded-lg shadow-lg z-10">
                         <button
                           onClick={(e) => handleEditStudySet(studySet.id, e)}
-                          className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors duration-150 rounded-t-lg"
+                          className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors duration-150 rounded-t-lg cursor-pointer"
                         >
                           <Edit3 size={16} className="text-cyan-400" />
                           <span className="text-gray-200">Edit StudySet</span>
                         </button>
                         <button
                           onClick={(e) => handleDeleteStudySet(studySet.id, e)}
-                          className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors duration-150 rounded-b-lg"
+                          className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors duration-150 rounded-b-lg cursor-pointer"
                         >
                           <Trash2 size={16} className="text-red-400" />
                           <span className="text-gray-200">Delete StudySet</span>
