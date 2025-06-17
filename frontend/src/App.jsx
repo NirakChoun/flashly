@@ -17,6 +17,13 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 
 import DashboardPage from "./pages/DashboardPage";
+import StudySetPage from "./pages/StudySetPage";
+import AddStudySetPage from "./pages/AddStudySetPage";
+import AddFlashcardPage from "./pages/AddFlashcardPage";
+import EditStudySetPage from "./pages/EditStudySetPage";
+import EditFlashcardPage from "./pages/EditFlashcardPage";
+import GeneratePage from "./pages/GeneratePage";
+import PreviewGeneratedStudySetPage from "./pages/PreviewGeneratedStudySetPage";
 
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -36,6 +43,25 @@ const App = () => {
         <Route element={<ProtectedRoutes />}>
           <Route path="/home" element={<HomeLayout />}>
             <Route index element={<DashboardPage />} />
+            <Route path="studysets/:studySetId" element={<StudySetPage />} />
+            <Route path="studysets/create" element={<AddStudySetPage />} />
+            <Route
+              path="studysets/:studySetId/edit"
+              element={<EditStudySetPage />}
+            />{" "}
+            <Route
+              path="studysets/:studySetId/add-flashcards"
+              element={<AddFlashcardPage />}
+            />
+            <Route
+              path="studysets/:studySetId/edit-flashcards"
+              element={<EditFlashcardPage />}
+            />{" "}
+            <Route path="generate" element={<GeneratePage />} />{" "}
+            <Route
+              path="studysets/:studySetId/preview"
+              element={<PreviewGeneratedStudySetPage />}
+            />{" "}
           </Route>
         </Route>
 

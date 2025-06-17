@@ -83,7 +83,7 @@ const Navbar = ({ isLoggedIn = false, user = null }) => {
 
   return (
     <header className="relative z-50 py-4 sm:py-6 bg-gray-900">
-      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="shrink-0">
@@ -147,7 +147,7 @@ const Navbar = ({ isLoggedIn = false, user = null }) => {
                 Dashboard
               </Link>
               <Link
-                to="/generate"
+                to="/home/generate"
                 className="text-base font-normal text-gray-300 transition-all duration-200 hover:text-white"
               >
                 Generate
@@ -290,7 +290,7 @@ const Navbar = ({ isLoggedIn = false, user = null }) => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <Link
-                        to="/generate"
+                        to="/home/generate"
                         className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full hover:from-cyan-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-900"
                       >
                         Generate

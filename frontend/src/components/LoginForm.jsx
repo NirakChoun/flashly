@@ -147,7 +147,7 @@ export function LoginForm({ className, loginUserSubmit, ...props }) {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white cursor-pointer border-0 transition-colors h-10 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-600 hover:to-purple-600 text-white cursor-pointer border-0 transition-colors h-10 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? "Logging in..." : "Login"}
                 </Button>
