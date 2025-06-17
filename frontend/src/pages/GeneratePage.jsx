@@ -221,12 +221,12 @@ const GeneratePage = () => {
           >
             <ArrowLeft size={24} />
           </button>
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-              <Sparkles className="inline mr-3" size={32} />
+          <div className="flex-1 text-center">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent flex items-center justify-center gap-3">
+              <Sparkles size={28} className="sm:size-8 flex-shrink-0" />
               Generate Flashcards
             </h1>
-            <p className="text-gray-400 mt-1">
+            <p className="text-gray-400 mt-1 text-sm sm:text-base">
               Upload a document and let AI create flashcards for you
             </p>
           </div>
