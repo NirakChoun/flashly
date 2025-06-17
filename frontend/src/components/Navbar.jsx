@@ -83,14 +83,21 @@ const Navbar = ({ isLoggedIn = false, user = null }) => {
 
   return (
     <header className="relative z-50 py-4 sm:py-6 bg-gray-900">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl px-6 lg:px-0">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="shrink-0">
-            <Link to="/" className="flex items-center space-x-3">
-              <img className="w-auto h-9" src={logo} alt="Flashly Logo" />
-              <span className="text-2xl font-bold text-white">Flashly</span>
-            </Link>
+            {isLoggedIn ? (
+              <Link to="/home" className="flex items-center space-x-3">
+                <img className="w-auto h-9" src={logo} alt="Flashly Logo" />
+                <span className="text-2xl font-bold text-white">Flashly</span>
+              </Link>
+            ) : (
+              <Link to="/" className="flex items-center space-x-3">
+                <img className="w-auto h-9" src={logo} alt="Flashly Logo" />
+                <span className="text-2xl font-bold text-white">Flashly</span>
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
