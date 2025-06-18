@@ -224,13 +224,13 @@ const Navbar = ({ isLoggedIn = false, user = null }) => {
             /* Guest user navigation */
             <nav className="hidden md:flex md:items-center md:justify-end md:space-x-8">
               <Link
-                to="/auth/login"
+                to="/login"
                 className="text-base font-normal text-gray-300 transition-all duration-200 hover:text-white"
               >
                 Login
               </Link>
               <Link
-                to="/auth/register"
+                to="/register"
                 className="inline-flex items-center justify-center px-6 py-2.5 text-base font-medium text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full hover:from-cyan-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-900"
               >
                 Sign Up
