@@ -41,6 +41,16 @@ class User(db.Model):
         """Check if user has a password (not OAuth-only)"""
         return self.password_hash is not None
     
+    def set_password(self, password):
+        """Set password hash"""
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        """Check if provided password matches hash"""
+        if not self.password_hash:
+            return False
+        return check_password_hash(self.password_hash, password)
+    
     def get_flashcard_stats(self):
         """Get user's flashcard statistics"""
         from .flashcard_model import Flashcard
