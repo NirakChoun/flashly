@@ -54,15 +54,15 @@ def oauth2_callback(provider):
     # Check for authentication errors
     if 'error' in request.args:
         error_msg = request.args.get('error_description', request.args.get('error'))
-        return redirect(f"{os.getenv('FRONTEND_URL')}/auth/login?error={error_msg}")
+        return redirect(f"{os.getenv('FRONTEND_URL')}/login?error={error_msg}")
 
     # Verify state parameter
     if request.args.get('state') != session.get('oauth2_state'):
-        return redirect(f"{os.getenv('FRONTEND_URL')}/auth/login?error=invalid_state")
+        return redirect(f"{os.getenv('FRONTEND_URL')}/login?error=invalid_state")
 
     # Check for authorization code
     if 'code' not in request.args:
-        return redirect(f"{os.getenv('FRONTEND_URL')}/auth/login?error=no_code")
+        return redirect(f"{os.getenv('FRONTEND_URL')}/login?error=no_code")
 
     try:
         # Exchange authorization code for access token
@@ -84,12 +84,12 @@ def oauth2_callback(provider):
         # Get user info from provider
         user_info = get_user_info(provider, provider_data, oauth2_token)
         if not user_info:
-            return redirect(f"{os.getenv('FRONTEND_URL')}/auth/login?error=user_info_failed")
+            return redirect(f"{os.getenv('FRONTEND_URL')}/login?error=user_info_failed")
 
         # Find or create user
         user = find_or_create_user(provider, user_info)
         if not user:
-            return redirect(f"{os.getenv('FRONTEND_URL')}/auth/login?error=user_creation_failed")
+            return redirect(f"{os.getenv('FRONTEND_URL')}/login?error=user_creation_failed")
 
         # Create JWT and redirect to frontend
         access_token = create_access_token(identity=str(user.id))
@@ -103,7 +103,7 @@ def oauth2_callback(provider):
 
     except Exception as e:
         current_app.logger.error(f"OAuth {provider} error: {str(e)}")
-        return redirect(f"{os.getenv('FRONTEND_URL')}/auth/login?error=oauth_error")
+        return redirect(f"{os.getenv('FRONTEND_URL')}/login?error=oauth_error")
 
 def get_user_info(provider, provider_data, access_token):
     """Get user information from OAuth provider"""
@@ -159,11 +159,13 @@ def find_or_create_user(provider, user_info):
     """Find existing user or create new one"""
     try:
         email = user_info['email']
+        current_app.logger.info(f"Processing OAuth user: {email} from {provider}")
         
         # Check if user already exists by email
         user = User.query.filter_by(email=email).first()
         
         if user:
+            current_app.logger.info(f"Found existing user: {user.email}")
             # Update OAuth info for existing user
             if not user.oauth_provider:
                 user.oauth_provider = provider
@@ -174,10 +176,12 @@ def find_or_create_user(provider, user_info):
                 user.avatar_url = user_info['picture']
                 
             db.session.commit()
+            current_app.logger.info(f"Updated existing user successfully")
             return user
 
         # Create new user
         username = get_unique_username(user_info['name'] or email.split('@')[0])
+        current_app.logger.info(f"Creating new user with username: {username}")
         
         user = User(
             username=username,
@@ -189,9 +193,14 @@ def find_or_create_user(provider, user_info):
         
         db.session.add(user)
         db.session.commit()
+        current_app.logger.info(f"Created new user successfully: {user.email}")
         return user
 
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"Error creating user: {str(e)}")
+        current_app.logger.error(f"User info received: {user_info}")
+        # Log the specific database error
+        if hasattr(e, 'orig'):
+            current_app.logger.error(f"Database error: {e.orig}")
         return None
