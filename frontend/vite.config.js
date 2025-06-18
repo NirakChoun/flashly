@@ -15,7 +15,9 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api": {
-        target: process.env.VITE_BACKEND_URL || "http://localhost:8000",
+        target:
+          process.env.VITE_BACKEND_URL ||
+          "https://flashly-api-adwh.onrender.com",
         changeOrigin: true,
         secure: process.env.NODE_ENV === "production",
         rewrite: (path) => path.replace(/^\/api/, ""),

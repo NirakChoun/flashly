@@ -100,13 +100,15 @@ export function RegisterForm({ className, registerUserSubmit, ...props }) {
 
   const handleGitHubLogin = () => {
     window.location.href = `${
-      import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+      import.meta.env.VITE_BACKEND_URL ||
+      "https://flashly-api-adwh.onrender.com"
     }/oauth/authorize/github`;
   };
 
   const handleGoogleLogin = () => {
     window.location.href = `${
-      import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+      import.meta.env.VITE_BACKEND_URL ||
+      "https://flashly-api-adwh.onrender.com"
     }/oauth/authorize/google`;
   };
 
