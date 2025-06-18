@@ -4,23 +4,30 @@ import { RegisterForm } from "../components/RegisterForm";
 const RegisterPage = () => {
   const registerUser = async (newUser) => {
     try {
-      const res = await fetch("/api/auth/register", {
+      const backendUrl =
+        import.meta.env.VITE_BACKEND_URL ||
+        "https://flashly-api-adwh.onrender.com";
+      const apiUrl = `${backendUrl}/auth/register`;
+
+      console.log("🔄 Calling register:", apiUrl);
+
+      const response = await fetch(apiUrl, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newUser),
-        credentials: "include",
       });
 
-      const data = await res.json();
+      console.log("📡 Register response status:", response.status);
 
-      if (!res.ok) {
-        // Throw error with the backend message
-        throw new Error(data.error || data.msg || "Registration failed");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Registration failed");
       }
 
-      return data;
+      return await response.json();
     } catch (error) {
       console.error("Registration error:", error);
       throw error;

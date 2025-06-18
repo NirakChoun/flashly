@@ -5,23 +5,32 @@ import { toast } from "react-toastify";
 const LoginPage = () => {
   const loginUser = async (email, password) => {
     try {
-      const res = await fetch("/api/auth/login", {
+      const backendUrl =
+        import.meta.env.VITE_BACKEND_URL ||
+        "https://flashly-api-adwh.onrender.com";
+      const apiUrl = `${backendUrl}/auth/login`;
+
+      console.log("🔄 Calling login:", apiUrl);
+
+      const res = await fetch(apiUrl, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-        credentials: "include",
       });
-      const data = await res.json();
 
-      console.log("Login response:", data);
-      console.log("Response status:", res.status);
-      console.log("Cookies set:", document.cookie);
+      console.log("📡 Login response status:", res.status);
 
       if (!res.ok) {
-        throw new Error(data.message || "Login failed");
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Login failed");
       }
+
+      const data = await res.json();
+      console.log("✅ Login successful:", data);
+      console.log("🍪 Cookies set:", document.cookie);
 
       return data;
     } catch (error) {

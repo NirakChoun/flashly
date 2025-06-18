@@ -10,31 +10,39 @@ const ProtectedRoutes = () => {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const res = await fetch("/api/auth/profile", {
+        console.log("🔍 Checking authentication...");
+
+        // Call backend directly (no /api prefix needed)
+        const backendUrl =
+          import.meta.env.VITE_BACKEND_URL ||
+          "https://flashly-api-adwh.onrender.com";
+        const apiUrl = `${backendUrl}/auth/profile`;
+
+        console.log("📡 Calling:", apiUrl);
+
+        const res = await fetch(apiUrl, {
           method: "GET",
-          credentials: "include", // Includes cookie in the request,
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
         });
 
+        console.log("📡 Response status:", res.status);
+
         if (!res.ok) {
-          throw new Error("Authentication failed");
+          const errorText = await res.text();
+          console.log("❌ Response error:", errorText);
+          throw new Error(`Authentication failed: ${res.status}`);
         }
 
         const data = await res.json();
-        console.log(`data: ${data}`);
+        console.log("✅ User data received:", data);
 
-        if (!data) {
-          throw new Error("No user data was found");
-        }
-        console.log("Authorization successfully");
         setIsAuthenticated(true);
       } catch (error) {
-        console.log("Authorization failed: ", error);
-        console.error("Authorization failed: ", error);
+        console.log("❌ Authorization failed:", error.message);
         setIsAuthenticated(false);
-        toast.error("Authorization failed. Please log in again.");
       } finally {
         setLoading(false);
       }
