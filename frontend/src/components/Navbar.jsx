@@ -329,7 +329,7 @@ const Navbar = ({ isLoggedIn = false, user = null }) => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <Link
-                        to="/auth/login"
+                        to="/login"
                         className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-gray-300 transition-all duration-200 border-2 border-gray-600 rounded-full hover:text-white hover:border-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 focus:ring-offset-gray-900"
                       >
                         Login
@@ -341,7 +341,7 @@ const Navbar = ({ isLoggedIn = false, user = null }) => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <Link
-                        to="/auth/register"
+                        to="/register"
                         className="inline-flex items-center justify-center px-8 py-3 text-base font-medium text-white transition-all duration-200 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full hover:from-cyan-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 focus:ring-offset-gray-900"
                       >
                         Sign Up
