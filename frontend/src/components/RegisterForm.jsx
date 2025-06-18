@@ -69,7 +69,7 @@ export function RegisterForm({ className, registerUserSubmit, ...props }) {
     try {
       await registerUserSubmit(newUser);
       toast.success("Account created successfully! Please log in.");
-      navigate("/auth/login");
+      navigate("/login");
     } catch (error) {
       console.error("Registration failed:", error);
 
@@ -266,7 +266,7 @@ export function RegisterForm({ className, registerUserSubmit, ...props }) {
               <div className="text-center text-sm">
                 <span className="text-gray-400">Already have an account?</span>{" "}
                 <Link
-                  to="/auth/login"
+                  to="/login"
                   className="underline underline-offset-4 text-cyan-400 hover:text-cyan-300"
                 >
                   Sign in

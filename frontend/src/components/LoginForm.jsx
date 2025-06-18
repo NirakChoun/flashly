@@ -161,7 +161,7 @@ export function LoginForm({ className, loginUserSubmit, ...props }) {
                   Don&apos;t have an account?
                 </span>{" "}
                 <Link
-                  to="/auth/register"
+                  to="/register"
                   className="underline underline-offset-4 text-cyan-400 hover:text-cyan-300"
                 >
                   Sign up

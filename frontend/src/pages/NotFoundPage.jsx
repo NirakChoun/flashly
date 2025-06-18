@@ -105,7 +105,7 @@ export default function NotFoundPage() {
 
           {/* Create flashcards button */}
           <Link
-            to="/auth/register"
+            to="/register"
             className="group inline-flex items-center text-sm font-semibold text-gray-300 hover:text-white transition-colors duration-200"
           >
             <svg
