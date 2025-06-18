@@ -94,16 +94,31 @@ def oauth2_callback(provider):
         # Create JWT and redirect to frontend
         access_token = create_access_token(identity=str(user.id))
         response = redirect(f"{os.getenv('FRONTEND_URL')}/home")
+        
+        # Set cookie with cross-origin settings
         set_access_cookies(response, access_token)
         
-        # Clear OAuth state from session
+        # Also try setting a manual cookie for debugging
+        response.set_cookie(
+            'debug_auth',
+            'oauth_success',
+            domain=None,  # Let browser handle
+            secure=True,
+            httponly=False,  # Allow JS access for debugging
+            samesite='None'  # Cross-origin
+        )
+        
+        # Clear OAuth state
         session.pop('oauth2_state', None)
         
+        current_app.logger.info(f"✅ OAuth successful, cookies set for: {user.email}")
         return response
 
     except Exception as e:
-        current_app.logger.error(f"OAuth {provider} error: {str(e)}")
+        current_app.logger.error(f"OAuth callback error: {str(e)}")
         return redirect(f"{os.getenv('FRONTEND_URL')}/login?error=oauth_error")
+        
+    
 
 def get_user_info(provider, provider_data, access_token):
     """Get user information from OAuth provider"""

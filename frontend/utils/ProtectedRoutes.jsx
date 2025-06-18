@@ -11,8 +11,8 @@ const ProtectedRoutes = () => {
     const checkAuthentication = async () => {
       try {
         console.log("🔍 Checking authentication...");
+        console.log("🍪 Current cookies:", document.cookie);
 
-        // Call backend directly (no /api prefix needed)
         const backendUrl =
           import.meta.env.VITE_BACKEND_URL ||
           "https://flashly-api-adwh.onrender.com";
@@ -22,13 +22,17 @@ const ProtectedRoutes = () => {
 
         const res = await fetch(apiUrl, {
           method: "GET",
-          credentials: "include",
+          credentials: "include", // ✅ Essential for cross-origin cookies
           headers: {
             "Content-Type": "application/json",
           },
         });
 
         console.log("📡 Response status:", res.status);
+        console.log(
+          "📡 Response headers:",
+          Object.fromEntries(res.headers.entries())
+        );
 
         if (!res.ok) {
           const errorText = await res.text();

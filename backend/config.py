@@ -9,16 +9,13 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
 
     # JWT Configurations
-    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-    JWT_COOKIE_SECURE = os.getenv("JWT_COOKIE_SECURE", "False").lower() == "true"
-    JWT_TOKEN_LOCATION = ["cookies"]
+    JWT_TOKEN_LOCATION = ['cookies']
+    JWT_COOKIE_SECURE = True  # HTTPS only
     JWT_COOKIE_HTTPONLY = True
-    JWT_ACCESS_COOKIE_PATH = "/"
-    JWT_REFRESH_COOKIE_PATH = "/token/refresh"
-    JWT_COOKIE_CSRF_PROTECT = False
-    
-    # SameSite Configuration
-    JWT_COOKIE_SAMESITE = os.getenv("JWT_COOKIE_SAMESITE", "Lax")
+    JWT_COOKIE_SAMESITE = 'None'  # ✅ Change from 'Strict' to 'None' for cross-origin
+    JWT_ACCESS_COOKIE_PATH = '/'
+    JWT_COOKIE_CSRF_PROTECT = False  # Disable CSRF for cross-origin
+    JWT_COOKIE_DOMAIN = None  # Let browser handle domain
     
     # CORS Configuration
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
