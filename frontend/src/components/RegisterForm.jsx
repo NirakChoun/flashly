@@ -99,11 +99,15 @@ export function RegisterForm({ className, registerUserSubmit, ...props }) {
   };
 
   const handleGitHubLogin = () => {
-    window.location.href = "http://localhost:8000/oauth/authorize/github";
+    window.location.href = `${
+      import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+    }/oauth/authorize/github`;
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8000/oauth/authorize/google";
+    window.location.href = `${
+      import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+    }/oauth/authorize/google`;
   };
 
   return (
