@@ -10,18 +10,12 @@ const LoginPage = () => {
         "https://flashly-api-adwh.onrender.com";
       const apiUrl = `${backendUrl}/auth/login`;
 
-      console.log("🔄 Calling login:", apiUrl);
-
       const res = await fetch(apiUrl, {
         method: "POST",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
-      console.log("📡 Login response status:", res.status);
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -29,8 +23,12 @@ const LoginPage = () => {
       }
 
       const data = await res.json();
-      console.log("✅ Login successful:", data);
-      console.log("🍪 Cookies set:", document.cookie);
+
+      // Store token if cookies don't work
+      if (data.token) {
+        localStorage.setItem("auth_token", data.token);
+        console.log("💾 Token stored in localStorage");
+      }
 
       return data;
     } catch (error) {

@@ -11,37 +11,53 @@ const ProtectedRoutes = () => {
     const checkAuthentication = async () => {
       try {
         console.log("🔍 Checking authentication...");
-        console.log("🍪 Current cookies:", document.cookie);
+
+        // Check for URL token first (from OAuth)
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlToken = urlParams.get("token");
+
+        if (urlToken) {
+          localStorage.setItem("auth_token", urlToken);
+          // Clean URL
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
+          console.log("🎉 Token found in URL and stored");
+        }
+
+        // Get token from localStorage
+        const token = localStorage.getItem("auth_token");
+
+        if (!token) {
+          console.log("❌ No token found");
+          setIsAuthenticated(false);
+          return;
+        }
 
         const backendUrl =
           import.meta.env.VITE_BACKEND_URL ||
           "https://flashly-api-adwh.onrender.com";
         const apiUrl = `${backendUrl}/auth/profile`;
 
-        console.log("📡 Calling:", apiUrl);
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ Use Bearer token
+        };
 
         const res = await fetch(apiUrl, {
           method: "GET",
-          credentials: "include", // ✅ Essential for cross-origin cookies
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: headers,
         });
 
-        console.log("📡 Response status:", res.status);
-        console.log(
-          "📡 Response headers:",
-          Object.fromEntries(res.headers.entries())
-        );
-
         if (!res.ok) {
-          const errorText = await res.text();
-          console.log("❌ Response error:", errorText);
+          localStorage.removeItem("auth_token"); // Clear invalid token
           throw new Error(`Authentication failed: ${res.status}`);
         }
 
         const data = await res.json();
-        console.log("✅ User data received:", data);
+        console.log("✅ Authentication successful with Bearer token");
 
         setIsAuthenticated(true);
       } catch (error) {

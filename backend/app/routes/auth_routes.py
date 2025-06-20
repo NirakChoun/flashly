@@ -13,18 +13,15 @@ def login():
         email = data.get('email')
         password = data.get('password')
         
-        # Validate user credentials
         user = User.query.filter_by(email=email).first()
-        
         if not user or not user.check_password(password):
             return jsonify({'error': 'Invalid credentials'}), 401
         
-        # Create access token
         access_token = create_access_token(identity=str(user.id))
         
-        # Create response
         response = jsonify({
             'message': 'Login successful',
+            'token': access_token,  # ✅ Include token in response
             'user': {
                 'id': str(user.id),
                 'username': user.username,
@@ -33,10 +30,10 @@ def login():
             }
         })
         
-        # Set JWT cookies
+        # Still try to set cookies (for future compatibility)
         set_access_cookies(response, access_token)
         
-        current_app.logger.info(f"✅ Login successful for: {user.email}")
+        current_app.logger.info(f"✅ Login successful for: {email}")
         return response, 200
         
     except Exception as e:
@@ -63,9 +60,32 @@ def logout():
     return response
 
 @auth_bp.route("/profile", methods=["GET"])
-@jwt_required()
+@jwt_required(optional=True)  # ✅ Make JWT optional to handle both cookies and Bearer
 def profile():
-    return get_profile_user(get_jwt_identity())
+    try:
+        # Try to get user from JWT (either cookie or Bearer token)
+        current_user_id = get_jwt_identity()
+        
+        if not current_user_id:
+            return jsonify({'error': 'No valid token found'}), 401
+            
+        user = User.query.get(current_user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+            
+        return jsonify({
+            'user': {
+                'id': str(user.id),
+                'username': user.username,
+                'email': user.email,
+                'avatar_url': user.avatar_url,
+                'oauth_provider': user.oauth_provider
+            }
+        }), 200
+        
+    except Exception as e:
+        current_app.logger.error(f"Profile error: {str(e)}")
+        return jsonify({'error': 'Failed to get profile'}), 500
 
 @auth_bp.route('/test-cookie', methods=['GET'])
 def test_cookie():

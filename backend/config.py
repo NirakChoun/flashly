@@ -9,13 +9,13 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
 
     # JWT Configurations
-    JWT_TOKEN_LOCATION = ['cookies']
-    JWT_COOKIE_SECURE = True  # HTTPS only
+    JWT_TOKEN_LOCATION = ['cookies', 'headers']  # ✅ Accept both
+    JWT_COOKIE_SECURE = True
     JWT_COOKIE_HTTPONLY = True
-    JWT_COOKIE_SAMESITE = 'None'  # ✅ Change from 'Strict' to 'None' for cross-origin
+    JWT_COOKIE_SAMESITE = 'None'
     JWT_ACCESS_COOKIE_PATH = '/'
-    JWT_COOKIE_CSRF_PROTECT = False  # Disable CSRF for cross-origin
-    JWT_COOKIE_DOMAIN = None  # Let browser handle domain
+    JWT_COOKIE_CSRF_PROTECT = False
+    JWT_COOKIE_DOMAIN = None
     
     # CORS Configuration
     CORS_ORIGINS = [os.getenv("FRONTEND_URL", "https://flashly-rftw.vercel.app")]
@@ -62,6 +62,7 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-    JWT_COOKIE_SECURE = True  # Requires HTTPS
-    JWT_COOKIE_SAMESITE = "None"  # Strict for production
+    JWT_COOKIE_SECURE = True
+    JWT_COOKIE_SAMESITE = "None"  # ✅ Change from "Strict" to "None"
+    JWT_COOKIE_DOMAIN = None      # ✅ Let browser handle domain
     CORS_ORIGINS = [os.getenv("FRONTEND_URL", "https://flashly-rftw.vercel.app")]
