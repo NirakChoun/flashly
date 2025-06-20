@@ -63,5 +63,5 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     DEBUG = False
     JWT_COOKIE_SECURE = True  # Requires HTTPS
-    JWT_COOKIE_SAMESITE = "Strict"  # Strict for production
+    JWT_COOKIE_SAMESITE = "None"  # None is required when frontend and backend are on different domains
     CORS_ORIGINS = [os.getenv("FRONTEND_URL", "https://yourdomain.com")]

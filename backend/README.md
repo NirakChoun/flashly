@@ -87,7 +87,7 @@ PUT  /api/studysets/{id}/flashcards              # Bulk update flashcards
 # JWT Configuration
 JWT_SECRET_KEY = "your-secret-key"
 JWT_COOKIE_SECURE = True  # Production only
-JWT_COOKIE_SAMESITE = "Strict"  # Production
+JWT_COOKIE_SAMESITE = "None"  # Enables cross-site cookies
 JWT_TOKEN_LOCATION = ["cookies"]
 ```
 
