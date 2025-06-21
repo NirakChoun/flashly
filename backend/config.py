@@ -66,3 +66,4 @@ class ProductionConfig(Config):
     JWT_COOKIE_SAMESITE = "None"  # ✅ Change from "Strict" to "None"
     JWT_COOKIE_DOMAIN = None      # ✅ Let browser handle domain
     CORS_ORIGINS = [os.getenv("FRONTEND_URL", "https://flashly-rftw.vercel.app")]
+    CORS_SUPPORTS_CREDENTIALS = True
