@@ -2,7 +2,11 @@
 
 **AI-Powered Flashcard Learning Platform**
 
+🚀 **[Live Demo](https://flashly-rftw.vercel.app/)** | 📖 [Documentation](#-getting-started) | 🛠️ [Setup Guide](#-getting-started)
+
 Flashly is a modern web application that helps students create, manage, and study with flashcards. Featuring AI-powered content generation from documents using Google's Gemini AI, intuitive study interfaces, and comprehensive flashcard management.
+
+> **Try it now:** [https://flashly-rftw.vercel.app/](https://flashly-rftw.vercel.app/)
 
 ## ✨ Features
 
@@ -14,6 +18,18 @@ Flashly is a modern web application that helps students create, manage, and stud
 - 🎨 **Modern UI** - Dark theme with cyan-purple gradient accents
 - 🔍 **Preview System** - Review and edit AI-generated flashcards before saving
 - 📊 **Progress Tracking** - Track your learning progress and study history
+
+## 🌐 Live Application
+
+**Production URL:** [https://flashly-rftw.vercel.app/](https://flashly-rftw.vercel.app/)
+
+### Demo Features Available:
+
+- ✅ Create account or sign in with GitHub/Google OAuth
+- ✅ Upload PDF documents for AI flashcard generation
+- ✅ Create and manage custom study sets
+- ✅ Interactive flashcard study modes
+- ✅ Dark theme responsive design
 
 ## 🛠️ Tech Stack
 
@@ -53,6 +69,13 @@ Flashly is a modern web application that helps students create, manage, and stud
 - **File Processing** - Support for PDF, DOC, DOCX, TXT formats
 - **Content Analysis** - Intelligent question-answer pair generation
 
+### Deployment
+
+- **Frontend:** [Vercel](https://vercel.com/) - Serverless deployment with automatic builds
+- **Backend:** [Render](https://render.com/) - Cloud application hosting
+- **Database:** PostgreSQL on Render
+- **CDN:** Vercel Edge Network for global performance
+
 ## 📁 Project Structure
 
 ```
@@ -75,6 +98,7 @@ flashly/
 │   ├── .env                     # Environment variables
 │   ├── .env.production          # Production environment
 │   ├── config.py                # Application configuration
+│   ├── gunicorn.conf.py         # Production server configuration
 │   ├── pyproject.toml           # UV dependencies
 │   ├── uv.lock                  # UV lock file
 │   └── run.py                   # Application entry point
@@ -112,6 +136,7 @@ flashly/
 │   ├── package.json            # Node dependencies
 │   ├── components.json         # Shadcn/UI config
 │   ├── tailwind.config.js      # Tailwind configuration
+│   ├── vercel.json             # Vercel deployment config
 │   └── vite.config.js          # Vite configuration
 ├── .gitignore
 └── README.md
@@ -119,7 +144,16 @@ flashly/
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Quick Start - Try the Live Demo
+
+1. **Visit the live application:** [https://flashly-rftw.vercel.app/](https://flashly-rftw.vercel.app/)
+2. **Create an account** or sign in with GitHub/Google
+3. **Upload a PDF** to generate AI flashcards
+4. **Study with your flashcards** using the interactive interface
+
+### Local Development Setup
+
+#### Prerequisites
 
 - **Node.js 18+** and npm
 - **Python 3.13+**
@@ -127,7 +161,7 @@ flashly/
 - **PostgreSQL** (for production)
 - **Google Gemini API Key** (for AI features)
 
-### Backend Setup
+#### Backend Setup
 
 1. **Navigate to backend directory**
 
@@ -167,7 +201,7 @@ flashly/
    uv run python run.py
    ```
 
-### Frontend Setup
+#### Frontend Setup
 
 1. **Navigate to frontend directory**
 
@@ -181,7 +215,14 @@ flashly/
    npm install
    ```
 
-3. **Start development server**
+3. **Set up environment variables**
+
+   ```bash
+   # Create .env file with backend URL
+   echo "VITE_BACKEND_URL=http://localhost:5000" > .env
+   ```
+
+4. **Start development server**
    ```bash
    npm run dev
    ```
@@ -212,6 +253,13 @@ UPLOAD_FOLDER=uploads/
 
 # CORS Configuration
 FRONTEND_URL=http://localhost:5173
+```
+
+#### Frontend `.env` file:
+
+```env
+# Backend API URL
+VITE_BACKEND_URL=http://localhost:5000
 ```
 
 ## 📊 Database Schema
@@ -318,35 +366,46 @@ CREATE TABLE flashcards (
 
 ## 🚀 Deployment
 
-### Frontend (Vercel/Netlify)
+The application is deployed using modern cloud platforms:
 
-```bash
-npm run build
-# Deploy dist/ folder to your hosting platform
-```
+### Production Deployment
 
-### Backend (Railway/Heroku)
+- **Frontend:** Deployed on [Vercel](https://vercel.com/) with automatic builds from GitHub
+- **Backend:** Deployed on [Render](https://render.com/) with PostgreSQL database
+- **Live URL:** [https://flashly-rftw.vercel.app/](https://flashly-rftw.vercel.app/)
 
-```bash
-# Set environment variables in your hosting platform
-# Ensure UV is available in the deployment environment
-uv sync --frozen
-```
+### Deploy Your Own Instance
 
-### Database Setup
+#### Frontend (Vercel)
 
-- Set up PostgreSQL instance (AWS RDS, Railway, etc.)
-- Update `DATABASE_URL` in environment variables
-- Run migrations: `uv run flask db upgrade`
+1. **Fork the repository**
+2. **Connect to Vercel**
+3. **Set environment variables:**
+   ```
+   VITE_BACKEND_URL=your-backend-url
+   ```
+4. **Deploy automatically**
+
+#### Backend (Render/Railway/Heroku)
+
+1. **Set environment variables**
+2. **Configure start command:**
+   ```bash
+   gunicorn -c gunicorn.conf.py -b 0.0.0.0:$PORT run:app
+   ```
+3. **Set up PostgreSQL database**
+4. **Run migrations on first deploy**
 
 ## 🛡️ Security Features
 
 - **JWT Authentication** - Secure token-based authentication
+- **OAuth Integration** - GitHub and Google OAuth support
 - **Password Hashing** - Werkzeug-based password hashing
 - **Input Validation** - Comprehensive request validation
 - **CORS Protection** - Configurable cross-origin policies
 - **File Upload Security** - Type and size validation
 - **Protected Routes** - Frontend route protection
+- **Environment Security** - Secure handling of API keys and secrets
 
 ## 📱 Mobile Support
 
@@ -408,9 +467,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Radix UI** - For accessible component primitives
 - **Lucide** - For the beautiful icon library
 - **UV Team** - For the fast Python package manager
+- **Vercel** - For seamless frontend deployment
+- **Render** - For reliable backend hosting
 
 ---
 
 **Built with ❤️ for students worldwide**
 
 _Transform your learning with AI-powered flashcards! 🎓✨_
+
+**🚀 [Try Flashly Now](https://flashly-rftw.vercel.app/)**
