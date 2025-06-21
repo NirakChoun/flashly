@@ -28,7 +28,7 @@ import PreviewGeneratedStudySetPage from "./pages/PreviewGeneratedStudySetPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 // Utils
-import ProtectedRoutes from "../utils/ProtectedRoutes";
+import ProtectedRoutes from "./utils/ProtectedRoutes";
 
 const App = () => {
   const router = createBrowserRouter(

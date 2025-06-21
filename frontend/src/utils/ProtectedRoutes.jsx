@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Spinner from "../src/components/Spinner";
+import Spinner from "../components/Spinner";
 
 const ProtectedRoutes = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
