@@ -16,6 +16,7 @@ import {
   FileEdit,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { apiRequestJson, apiRequest } from "../utils/FetchApi";
 
 const StudySetPage = () => {
   const { studySetId } = useParams();
@@ -40,20 +41,7 @@ const StudySetPage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-
-        const response = await fetch(`/api/studysets/${studySetId}`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch study set: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await apiRequestJson(`/studysets/${studySetId}`);
         console.log("API Response:", data);
 
         setStudySet(data.studyset);
@@ -120,21 +108,11 @@ const StudySetPage = () => {
   const saveStudySet = async () => {
     try {
       setSaving(true);
-
-      const response = await fetch(`/api/studysets/${studySetId}`, {
+      const updatedStudySet = await apiRequestJson(`/studysets/${studySetId}`, {
         method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(editingStudySet),
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to update study set: ${response.status}`);
-      }
-
-      const updatedStudySet = await response.json();
       setStudySet(updatedStudySet);
       setEditMode(null);
       toast.success("Study set updated successfully!");
@@ -149,23 +127,16 @@ const StudySetPage = () => {
   const saveFlashcards = async () => {
     try {
       setSaving(true);
+      const result = await apiRequestJson(
+        `/studysets/${studySetId}/flashcards`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            flashcards: editingFlashcards,
+          }),
+        }
+      );
 
-      const response = await fetch(`/api/studysets/${studySetId}/flashcards`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          flashcards: editingFlashcards,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to update flashcards: ${response.status}`);
-      }
-
-      const result = await response.json();
       setFlashcards(result.flashcards || editingFlashcards);
       setEditMode(null);
       toast.success("Flashcards updated successfully!");

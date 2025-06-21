@@ -10,6 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { apiRequestJson } from "../utils/FetchApi";
 
 const DashboardPage = () => {
   const [studySets, setStudySets] = useState([]);
@@ -21,19 +22,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchStudySets = async () => {
       try {
-        const response = await fetch("/api/studysets/", {
-          method: "GET",
-          credentials: "include", // Include cookies for JWT
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await apiRequestJson("/studysets/");
         setStudySets(data);
         setLoading(false);
       } catch (error) {

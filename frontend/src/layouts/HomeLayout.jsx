@@ -11,12 +11,30 @@ const HomeLayout = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("/api/auth/profile", {
-          credentials: "include",
+        const backendUrl =
+          import.meta.env.VITE_BACKEND_URL ||
+          "https://flashly-api-adwh.onrender.com";
+        const token = localStorage.getItem("auth_token");
+
+        const headers = {
+          "Content-Type": "application/json",
+        };
+
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(`${backendUrl}/auth/profile`, {
+          method: "GET",
+          headers: headers,
         });
+
         if (response.ok) {
           const userData = await response.json();
-          setUser(userData);
+          console.log("✅ User data fetched:", userData);
+          setUser(userData.user); // ✅ Make sure to access user property
+        } else {
+          console.log("❌ Failed to fetch user profile");
         }
       } catch (error) {
         console.error("Failed to fetch user:", error);

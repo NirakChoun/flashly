@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Plus, Trash2, BookOpen } from "lucide-react";
 import { toast } from "react-toastify";
+import { apiRequestJson } from "../utils/FetchApi";
 
 const AddFlashcardPage = () => {
   const { studySetId } = useParams();
@@ -18,19 +19,7 @@ const AddFlashcardPage = () => {
   useEffect(() => {
     const fetchStudySet = async () => {
       try {
-        const response = await fetch(`/api/studysets/${studySetId}`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch study set");
-        }
-
-        const data = await response.json();
+        const data = await apiRequestJson(`/studysets/${studySetId}`);
         setStudySet(data.studyset);
       } catch (error) {
         console.error("Error fetching study set:", error);
@@ -114,30 +103,20 @@ const AddFlashcardPage = () => {
         answer: card.answer.trim(),
       }));
 
-      const response = await fetch(`/api/studysets/${studySetId}/flashcards`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          flashcards: flashcardsData,
-        }),
-      });
+      const result = await apiRequestJson(
+        `/studysets/${studySetId}/flashcards`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            flashcards: flashcardsData,
+          }),
+        }
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`
-        );
-      }
-
-      const result = await response.json();
       toast.success(
         `Successfully created ${result.flashcards.length} flashcards!`
       );
 
-      // Navigate to the study set page
       navigate(`/home/studysets/${studySetId}`);
     } catch (error) {
       console.error("Error creating flashcards:", error);

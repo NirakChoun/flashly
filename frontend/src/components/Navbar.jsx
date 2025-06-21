@@ -28,19 +28,37 @@ const Navbar = ({ isLoggedIn = false, user = null }) => {
     try {
       setIsLoggingOut(true);
 
-      const response = await fetch("/api/auth/logout", {
+      const backendUrl =
+        import.meta.env.VITE_BACKEND_URL ||
+        "https://flashly-api-adwh.onrender.com";
+      const token = localStorage.getItem("auth_token");
+
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${backendUrl}/auth/logout`, {
         method: "POST",
-        credentials: "include",
+        headers: headers,
       });
 
       if (!response.ok) {
         throw new Error("Logout failed");
       }
 
+      // Clear local storage
+      localStorage.removeItem("auth_token");
+
       toast.success("Logged out successfully");
       navigate("/");
     } catch (error) {
       console.error("Logout error:", error);
+      // Clear token anyway on logout error
+      localStorage.removeItem("auth_token");
       toast.error("Failed to logout. Please try again.");
     } finally {
       setIsLoggingOut(false);

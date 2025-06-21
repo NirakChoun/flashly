@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, BookOpen, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
+import { apiRequestJson, apiRequest } from "../utils/FetchApi";
 
 const EditStudySetPage = () => {
   const { studySetId } = useParams();
@@ -22,20 +23,7 @@ const EditStudySetPage = () => {
     const fetchStudySet = async () => {
       try {
         setIsLoading(true);
-
-        const response = await fetch(`/api/studysets/${studySetId}`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch study set");
-        }
-
-        const data = await response.json();
+        const data = await apiRequestJson(`/studysets/${studySetId}`);
         const studySetData = data.studyset;
 
         setStudySet(studySetData);
@@ -100,30 +88,16 @@ const EditStudySetPage = () => {
     setIsSaving(true);
 
     try {
-      const response = await fetch(`/api/studysets/${studySetId}`, {
+      const updatedStudySet = await apiRequestJson(`/studysets/${studySetId}`, {
         method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           title: formData.title.trim(),
           description: formData.description.trim(),
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`
-        );
-      }
-
-      const updatedStudySet = await response.json();
       setStudySet(updatedStudySet);
       toast.success("Study set updated successfully!");
-
-      // Navigate back to the study set
       navigate(`/home/studysets/${studySetId}`);
     } catch (error) {
       console.error("Error updating study set:", error);
@@ -145,20 +119,9 @@ const EditStudySetPage = () => {
     setIsDeleting(true);
 
     try {
-      const response = await fetch(`/api/studysets/${studySetId}`, {
+      await apiRequest(`/studysets/${studySetId}`, {
         method: "DELETE",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`
-        );
-      }
 
       toast.success("Study set deleted successfully!");
       navigate("/home");

@@ -12,6 +12,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { apiRequestJson, apiRequest } from "../utils/FetchApi";
 
 const PreviewGeneratedStudySetPage = () => {
   const { studySetId } = useParams();
@@ -45,19 +46,7 @@ const PreviewGeneratedStudySetPage = () => {
           setSourceFileName(navSourceFileName || "");
         } else {
           // Fallback: fetch from API (if user refreshes page)
-          const response = await fetch(`/api/studysets/${studySetId}`, {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to fetch study set");
-          }
-
-          const data = await response.json();
+          const data = await apiRequestJson(`/studysets/${studySetId}`);
           setStudySet(data.studyset);
           setFlashcards(data.flashcards || []);
           setOriginalFlashcards(data.flashcards || []);
@@ -75,24 +64,6 @@ const PreviewGeneratedStudySetPage = () => {
       initializeData();
     }
   }, [studySetId, location.state, navigate]);
-
-  const handleFlashcardChange = (index, field, value) => {
-    const updatedFlashcards = [...flashcards];
-    updatedFlashcards[index] = {
-      ...updatedFlashcards[index],
-      [field]: value,
-    };
-    setFlashcards(updatedFlashcards);
-
-    // Clear error when user starts typing
-    const errorKey = `${index}_${field}`;
-    if (errors[errorKey]) {
-      setErrors((prev) => ({
-        ...prev,
-        [errorKey]: "",
-      }));
-    }
-  };
 
   const addFlashcard = () => {
     setFlashcards([
@@ -146,20 +117,15 @@ const PreviewGeneratedStudySetPage = () => {
     setIsSaving(true);
 
     try {
-      // Prepare flashcards data for saving
       const flashcardsToSave = flashcards.map((card) => ({
         question: card.question.trim(),
         answer: card.answer.trim(),
       }));
 
-      const response = await fetch(
-        `/api/studysets/${studySetId}/flashcards/save-preview`,
+      const result = await apiRequestJson(
+        `/studysets/${studySetId}/flashcards/save-preview`,
         {
           method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             flashcards: flashcardsToSave,
             source_file_name: sourceFileName,
@@ -167,17 +133,10 @@ const PreviewGeneratedStudySetPage = () => {
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to save flashcards");
-      }
-
-      const result = await response.json();
       toast.success(
         `Successfully saved ${result.flashcards.length} flashcards!`
       );
 
-      // Navigate to the study set page
       navigate(`/home/studysets/${studySetId}`);
     } catch (error) {
       console.error("Error saving flashcards:", error);
@@ -187,24 +146,21 @@ const PreviewGeneratedStudySetPage = () => {
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     if (
       window.confirm(
         "Are you sure you want to cancel? All generated flashcards will be lost and the study set will be deleted."
       )
     ) {
-      // Delete the empty study set since user is canceling
-      fetch(`/api/studysets/${studySetId}`, {
-        method: "DELETE",
-        credentials: "include",
-      })
-        .then(() => {
-          navigate("/home");
-        })
-        .catch((error) => {
-          console.error("Error deleting study set:", error);
-          navigate("/home");
+      try {
+        await apiRequest(`/studysets/${studySetId}`, {
+          method: "DELETE",
         });
+        navigate("/home");
+      } catch (error) {
+        console.error("Error deleting study set:", error);
+        navigate("/home");
+      }
     }
   };
 

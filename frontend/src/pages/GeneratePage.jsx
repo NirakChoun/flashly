@@ -11,6 +11,7 @@ import {
   Loader,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { apiRequestJson, apiRequest } from "../utils/FetchApi";
 
 const GeneratePage = () => {
   const navigate = useNavigate();
@@ -143,44 +144,25 @@ const GeneratePage = () => {
 
     try {
       // Step 1: Create the study set
-      const studySetResponse = await fetch("/api/studysets/", {
+      const studySet = await apiRequestJson("/studysets/", {
         method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           title: formData.title.trim(),
           description: formData.description.trim(),
         }),
       });
 
-      if (!studySetResponse.ok) {
-        const errorData = await studySetResponse.json();
-        throw new Error(errorData.error || "Failed to create study set");
-      }
-
-      const studySet = await studySetResponse.json();
-
       // Step 2: Generate flashcards preview from file
       const generateFormData = new FormData();
       generateFormData.append("file", selectedFile);
 
-      const previewResponse = await fetch(
-        `/api/studysets/${studySet.id}/flashcards/preview`,
+      const previewData = await apiRequestJson(
+        `/studysets/${studySet.id}/flashcards/preview`,
         {
           method: "POST",
-          credentials: "include",
           body: generateFormData,
         }
       );
-
-      if (!previewResponse.ok) {
-        const errorData = await previewResponse.json();
-        throw new Error(errorData.error || "Failed to generate flashcards");
-      }
-
-      const previewData = await previewResponse.json();
 
       toast.success(
         `Generated ${previewData.flashcards.length} flashcards from your file!`
