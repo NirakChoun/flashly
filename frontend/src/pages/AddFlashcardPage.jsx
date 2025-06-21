@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Plus, Trash2, BookOpen } from "lucide-react";
 import { toast } from "react-toastify";
-import { apiRequestJson } from "../utils/FetchApi";
+import { apiRequestJson } from "../utils/api";
 
 const AddFlashcardPage = () => {
   const { studySetId } = useParams();

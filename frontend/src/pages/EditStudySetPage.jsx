@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, BookOpen, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { apiRequestJson, apiRequest } from "../utils/FetchApi";
+import { apiRequestJson, apiRequest } from "../utils/api";
 
 const EditStudySetPage = () => {
   const { studySetId } = useParams();

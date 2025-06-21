@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, BookOpen } from "lucide-react";
 import { toast } from "react-toastify";
+import { apiRequestJson } from "../utils/api";
 
 const AddStudySetPage = () => {
   const navigate = useNavigate();
@@ -55,29 +56,15 @@ const AddStudySetPage = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/studysets/", {
+      const newStudySet = await apiRequestJson("/studysets/", {
         method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           title: formData.title.trim(),
           description: formData.description.trim(),
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`
-        );
-      }
-
-      const newStudySet = await response.json();
       toast.success("Study set created successfully!");
-
-      // Navigate to add flashcards page
       navigate(`/home/studysets/${newStudySet.id}/add-flashcards`);
     } catch (error) {
       console.error("Error creating study set:", error);

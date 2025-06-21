@@ -16,7 +16,7 @@ import {
   FileEdit,
 } from "lucide-react";
 import { toast } from "react-toastify";
-import { apiRequestJson, apiRequest } from "../utils/FetchApi";
+import { apiRequestJson, apiRequest } from "../utils/api";
 
 const StudySetPage = () => {
   const { studySetId } = useParams();

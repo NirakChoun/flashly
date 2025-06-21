@@ -10,7 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "react-toastify";
-import { apiRequestJson } from "../utils/FetchApi";
+import { apiRequestJson, apiRequest } from "../utils/api";
 
 const DashboardPage = () => {
   const [studySets, setStudySets] = useState([]);
@@ -55,17 +55,9 @@ const DashboardPage = () => {
 
     if (window.confirm("Are you sure you want to delete this study set?")) {
       try {
-        const response = await fetch(`/api/studysets/${studySetId}`, {
+        await apiRequest(`/studysets/${studySetId}`, {
           method: "DELETE",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
         });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
 
         // Remove from local state
         setStudySets(studySets.filter((set) => set.id !== studySetId));

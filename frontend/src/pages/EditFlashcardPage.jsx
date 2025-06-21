@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Plus, Trash2, BookOpen } from "lucide-react";
 import { toast } from "react-toastify";
+import { apiRequestJson } from "../utils/api";
 
 const EditFlashcardPage = () => {
   const { studySetId } = useParams();
@@ -19,20 +20,7 @@ const EditFlashcardPage = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-
-        const response = await fetch(`/api/studysets/${studySetId}`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch study set");
-        }
-
-        const data = await response.json();
+        const data = await apiRequestJson(`/studysets/${studySetId}`);
         setStudySet(data.studyset);
         setFlashcards(data.flashcards || []);
         setOriginalFlashcards(data.flashcards || []);
@@ -128,26 +116,24 @@ const EditFlashcardPage = () => {
     setIsSaving(true);
 
     try {
-      // Prepare data for the API
       const existingFlashcards = flashcards.filter(
         (card) => card.id && !card.isNew && !card.id.startsWith("temp_")
       );
       const newFlashcards = flashcards.filter(
         (card) => card.isNew || card.id.startsWith("temp_")
       );
+
       const originalIds = originalFlashcards.map((card) => card.id);
       const currentIds = existingFlashcards.map((card) => card.id);
       const deletedIds = originalIds.filter((id) => !currentIds.includes(id));
 
       const updateData = {
         flashcards: [
-          // Existing flashcards (for updates)
           ...existingFlashcards.map((card) => ({
             id: card.id,
             question: card.question.trim(),
             answer: card.answer.trim(),
           })),
-          // New flashcards (for creation)
           ...newFlashcards.map((card) => ({
             question: card.question.trim(),
             answer: card.answer.trim(),
@@ -156,26 +142,15 @@ const EditFlashcardPage = () => {
         delete_ids: deletedIds,
       };
 
-      const response = await fetch(`/api/studysets/${studySetId}/flashcards`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updateData),
-      });
+      const result = await apiRequestJson(
+        `/studysets/${studySetId}/flashcards`,
+        {
+          method: "PUT",
+          body: JSON.stringify(updateData),
+        }
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`
-        );
-      }
-
-      const result = await response.json();
       toast.success(`Successfully updated flashcards!`);
-
-      // Navigate back to the study set
       navigate(`/home/studysets/${studySetId}`);
     } catch (error) {
       console.error("Error updating flashcards:", error);

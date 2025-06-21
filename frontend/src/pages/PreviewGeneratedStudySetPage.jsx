@@ -12,7 +12,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { toast } from "react-toastify";
-import { apiRequestJson, apiRequest } from "../utils/FetchApi";
+import { apiRequestJson, apiRequest } from "../utils/api";
 
 const PreviewGeneratedStudySetPage = () => {
   const { studySetId } = useParams();
@@ -89,6 +89,24 @@ const PreviewGeneratedStudySetPage = () => {
       setErrors(newErrors);
     } else {
       toast.error("You must have at least one flashcard");
+    }
+  };
+
+  const handleFlashcardChange = (index, field, value) => {
+    const updatedFlashcards = [...flashcards];
+    updatedFlashcards[index] = {
+      ...updatedFlashcards[index],
+      [field]: value,
+    };
+    setFlashcards(updatedFlashcards);
+
+    // Clear error when user starts typing
+    const errorKey = `${index}_${field}`;
+    if (errors[errorKey]) {
+      setErrors((prev) => ({
+        ...prev,
+        [errorKey]: "",
+      }));
     }
   };
 
