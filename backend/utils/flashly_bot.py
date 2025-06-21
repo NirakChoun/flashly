@@ -11,15 +11,32 @@ class FlashlyBot:
     def __init__(self):
         GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
         genai.configure(api_key=GEMINI_API_KEY)
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        generation_config = {
+            "temperature": 0.9,
+            "top_p": 1,
+            "top_k": 1,
+            "max_output_tokens": 8192,
+        }
+        
+        self.model = genai.GenerativeModel(
+            'gemini-1.5-flash',
+            generation_config=generation_config
+        )
     
     def extract_text(self, file):
         try:
             file_stream = file.stream 
             doc = pymupdf.open(stream=file_stream.read(), filetype="pdf")
             text = ""
+            page_count = 0
+            
             for page in doc:
                 text += page.get_text()
+                page_count += 1
+                
+            print(f"📝 Extracted {len(text)} characters from {page_count} pages")  # ✅ ADD: Helpful logging
+            doc.close()
             return text
         except Exception as e:
             print(f"❌ Error extracting text: {e}")
@@ -131,6 +148,8 @@ class FlashlyBot:
         try:
             response = self.model.generate_content(prompt)
             flashcards = self.clean_gemini_output(response.text)
+            if flashcards:
+                print(f"✅ Generated {len(flashcards)} unlimited flashcards!")
             return flashcards
         except Exception as e:
             print(f"❌ Error generating flashcards: {e}")
