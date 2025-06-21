@@ -1,6 +1,7 @@
 from app.models.flashcard_model import Flashcard
 from app import db
 from utils.flashly_bot import FlashlyBot
+from flask import current_app
 
 def get_flashcards_by_studyset(studyset_id):
     """Get all flashcards for a specific study set"""
@@ -86,19 +87,23 @@ def update_flashcards(studyset_id, user_id, data):
             Flashcard.query.filter(
                 Flashcard.id.in_(delete_ids),
                 Flashcard.studyset_id == studyset_id,
-                Flashcard.user_id == user_id  # Security: ensure user owns the flashcards
+                Flashcard.user_id == user_id
             ).delete(synchronize_session=False)
 
         # 2. UPDATE & CREATE: Process flashcards array
         updated_flashcards = []
         for card_data in data.get('flashcards', []):
             
-            if 'id' in card_data and card_data['id']:
+            # ✅ FIX: Check if ID exists AND is not a temporary ID
+            if ('id' in card_data and 
+                card_data['id'] and 
+                not str(card_data['id']).startswith('temp_')):
+                
                 # UPDATE existing flashcard
                 flashcard = Flashcard.query.filter_by(
                     id=card_data['id'],
                     studyset_id=studyset_id,
-                    user_id=user_id  # Security: ensure user owns the flashcard
+                    user_id=user_id
                 ).first()
                 
                 if flashcard:
@@ -107,7 +112,7 @@ def update_flashcards(studyset_id, user_id, data):
                     updated_flashcards.append(flashcard)
             
             else:
-                # CREATE new flashcard (no id means new)
+                # CREATE new flashcard (no valid id means new)
                 new_flashcard = Flashcard(
                     user_id=user_id,
                     studyset_id=studyset_id,
@@ -130,6 +135,7 @@ def update_flashcards(studyset_id, user_id, data):
         
     except Exception as e:
         db.session.rollback()
+        current_app.logger.error(f"❌ Error updating flashcards: {str(e)}")
         raise e
     
 def delete_flashcard(flashcard_id):

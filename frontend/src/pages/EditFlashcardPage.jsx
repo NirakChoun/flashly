@@ -60,7 +60,7 @@ const EditFlashcardPage = () => {
     setFlashcards([
       ...flashcards,
       {
-        id: `temp_${Date.now()}`,
+        id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // More unique temp ID
         question: "",
         answer: "",
         isNew: true,
